@@ -13,7 +13,8 @@ from sense_hat import SenseHat
 
 # =====================================================
 
-STATE_FILE = "data/state.json"
+base_dir = os.path.dirname(os.path.abspath(__file__))
+STATE_FILE = os.path.join(base_dir, "data/state.json")
 
 sense = SenseHat()
 
@@ -64,7 +65,6 @@ def main():
     state = load_state()
 
     while True:
-
         now = datetime.now()
 
         # ============================================
@@ -119,6 +119,7 @@ def main():
         # ============================================
 
         if now.hour < 19:
+            print(f"Show colour %s", colour)
 
             show(colour)
 

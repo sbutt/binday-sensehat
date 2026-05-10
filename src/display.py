@@ -39,56 +39,34 @@ def clear():
 # =====================================================
 
 def show_environment():
-    """Static display: Temperature bar graph + values"""
-    temp = sense.get_temperature()
-    pressure = sense.get_pressure()
-    humidity = sense.get_humidity()
+    """Fully static display: Humidity (left) + Pressure (right)"""
+    try:
+        pressure = sense.get_pressure()
+        humidity = sense.get_humidity()
 
-    sense.clear()
+        sense.clear()
 
-    temp_c = int(temp)
-
-    # === Temperature Bar (Left column - tall and clear) ===
-    # Scale roughly 0°C to 40°C
-    bar_height = max(0, min(8, int((temp_c + 5) / 5.5)))
-
-    for y in range(8):
-        if y < bar_height:
-            # Temperature color gradient
-            if temp_c < 12:
-                colour = (0, 100, 255)      # cold blue
-            elif temp_c < 18:
-                colour = (0, 255, 200)      # cyan
-            elif temp_c < 24:
-                colour = (100, 255, 50)     # green
+        # Humidity bar - LEFT column
+        hum_height = max(0, min(8, int(humidity / 13)))
+        for y in range(8):
+            if y < hum_height:
+                colour = (0, 160, 255) if humidity < 70 else (0, 255, 200)
+                sense.set_pixel(0, 7 - y, colour)
             else:
-                colour = (255, 100, 0)      # warm orange
-            sense.set_pixel(0, 7 - y, colour)
-        else:
-            sense.set_pixel(0, 7 - y, (10, 10, 10))  # faint background
+                sense.set_pixel(0, 7 - y, (8, 8, 12))
 
-    # === Small indicators on the right ===
-    # Humidity (top right - 3 pixels)
-    hum_level = min(3, int(humidity / 35))
-    for x in range(1, 4):
-        colour = (80, 180, 255) if x-1 < hum_level else (25, 25, 25)
-        sense.set_pixel(x, 0, colour)
+        # Pressure bar - RIGHT column
+        press_height = max(0, min(8, int((pressure - 970) / 9)))
+        for y in range(8):
+            if y < press_height:
+                colour = (255, 200, 60) if pressure >= 1010 else (120, 180, 255)
+                sense.set_pixel(7, 7 - y, colour)
+            else:
+                sense.set_pixel(7, 7 - y, (8, 8, 12))
 
-    # Pressure (middle right - 3 pixels)
-    press_level = min(3, int((pressure - 990) / 12))
-    for x in range(1, 4):
-        colour = (255, 220, 80) if x-1 < press_level else (25, 25, 25)
-        sense.set_pixel(x, 3, colour)
+        # Tiny static labels
+        sense.set_pixel(1, 0, (100, 100, 100))  # H
+        sense.set_pixel(6, 0, (180, 180, 80))   # P
 
-    # === Show temperature number briefly (without clearing bar) ===
-    # We show it once then the bar stays
-    sense.show_message(f"{temp_c}C", scroll_speed=0.09, text_colour=(180, 180, 180))
-
-    # Optional: redraw the bar after message (in case it cleared)
-    time.sleep(0.3)
-    # Redraw bar quickly
-    for y in range(8):
-        if y < bar_height:
-            sense.set_pixel(0, 7 - y, colour)
-        else:
-            sense.set_pixel(0, 7 - y, (10, 10, 10))
+    except Exception:
+        sense.clear((40, 0, 0))  # Red screen if something goes wrong
