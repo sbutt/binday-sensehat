@@ -6,7 +6,7 @@ import json
 import os
 
 from rules import tomorrow_bins
-from display import show, flash, clear, COLOURS
+from display import show, flash, clear, COLOURS, show_environment
 from logger import setup_logger
 
 from sense_hat import SenseHat
@@ -100,11 +100,9 @@ def main():
         bins = tomorrow_bins()
 
         if not bins:
-
-            clear()
-
-            time.sleep(60)
-
+            # No bin collection tomorrow → show temperature / pressure / humidity
+            show_environment()
+            time.sleep(30)          # refresh every 30 seconds
             continue
 
         # ============================================
