@@ -17,3 +17,9 @@ A Raspberry Pi Sense HAT system that displays bin collection status using:
 ```bash
 chmod +x install.sh
 ./install.sh
+```
+
+TODO:
+- Make the black bin show as a white square with black in the middle.
+- Update for June schedule.
+- Get bank holidays from holidays python module instead of hard coding.
